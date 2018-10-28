@@ -1,0 +1,1 @@
+# Sql_Prikladni_informaciini_technologii
