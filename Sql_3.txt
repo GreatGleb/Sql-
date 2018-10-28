@@ -1,0 +1,47 @@
+Лабораторна робота №3
+Модификація даних
+
+1)
+CREATE TABLE SalesLT.ProductTMP_009  (
+    ProductID int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(255) NOT NULL,
+    ProductNumber nvarchar(25) NOT NULL,
+    Color nvarchar(15) NULL,
+    StandardCost money NOT NULL,
+    ListPrice money NOT NULL,
+    Size nvarchar(5) NULL,
+    Weight decimal(8, 2) NULL,
+    ProductCategoryID int NULL
+)
+
+2)
+SET IDENTITY_INSERT SalesLT.ProductTMP_009 ON
+
+INSERT INTO SalesLT.ProductTMP_009 (ProductID, Name, ProductNumber, Color, StandardCost, ListPrice, Size, Weight, ProductCategoryID)
+SELECT ProductID, Name, ProductNumber, Color, StandardCost, ListPrice, Size, Weight, ProductCategoryID
+FROM SalesLT.Product
+
+SET IDENTITY_INSERT SalesLT.ProductTMP_009 OFF
+
+3)
+CREATE TABLE SalesLT.ColorTMP_009   (
+    ColorID int IDENTITY(1,1) NOT NULL,
+    NameColor nvarchar(25) NOT NULL,
+)
+
+4)
+INSERT INTO SalesLT.ColorTMP_009 (NameColor)
+SELECT Color
+FROM SalesLT.Product
+where Product.Color is not NULL
+GROUP BY Color
+order by Color
+
+5)
+ALTER TABLE SalesLT.ProductTMP_009 ADD ColorID int
+
+6)
+UPDATE SalesLT.ProductTMP_009
+SET  SalesLT.ProductTMP_009.ColorID = SalesLT.ColorTMP_009.ColorID 
+from SalesLT.ColorTMP_009
+where SalesLT.ColorTMP_009.NameColor=SalesLT.ProductTMP_009.Color
