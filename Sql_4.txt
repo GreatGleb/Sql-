@@ -16,25 +16,20 @@ on SalesOrderHeader.CustomerID = Customer.CustomerID
 where SalesOrderHeader.TotalDue = @maxTotal
 
 3)
-with Dater(City, year, month, LineTotal) as
-(
-select A.City, year(H.DueDate), month(H.DueDate), D.LineTotal
-from SalesLT.SalesOrderHeader H inner join SalesLT.SalesOrderDetail D
-on H.SalesOrderID = D.SalesOrderDetailID inner join SalesLt.Address A
-on H.BillToAddressID=A.AddressID
-where H.DueDate > '2011/12/31'
-union all 
-select A.City, year(H.DueDate), month(H.DueDate), D.LineTotal
-from SalesLT.SalesOrderHeader H inner join SalesLT.SalesOrderDetail D
-on H.SalesOrderID = D.SalesOrderDetailID inner join SalesLt.Address A
-on H.BillToAddressID=A.AddressID
-inner join Dater as t on D.LineTotal=t.LineTotal
-where H.DueDate < '2013/01/01'
+WITH DateSeries(d1, d2)
+AS (
+SELECT CAST('2012-01-01' AS DATE) as d1, EOMONTH(CAST('2012-01-01' AS DATE)) as d2
+UNION ALL
+SELECT DATEADD(mm, 1, d1), EOMONTH(DATEADD(mm,1,d2))
+FROM DateSeries
+WHERE d2<DATEADD(mm, -1, DATEADD(yy, 1, CAST('2012-01-01' AS DATE)))
 )
-
-select City, year, month, LineTotal
-from Dater
-order by month
+select d.d1, d.d2,a.City, sum(h.TotalDue) AS 'Total Due'
+from DateSeries d , SalesLT.SalesOrderHeader h
+INNER JOIN SalesLT.Address a ON h.BillToAddressID = a.AddressID
+where h.OrderDate BETWEEN d.d1 and d.d2
+GROUP BY a.City, d.d1, d.d2
+ORDER BY a.City, d.d1, d.d2
 
 4)
 CREATE PROCEDURE Expensive_Orders_in_Delivery_Services @DATE_BEG AS DATE, @DATE_END AS DATE 
