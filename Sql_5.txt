@@ -365,24 +365,17 @@ _________________
 SELECT [dbo].[Chisla](1) as 'Число';
 
 3)
-DECLARE update_cursor CURSOR FOR 
-
-SELECT SubTotal
-from SalesLT.SalesOrderHeader
-  
-OPEN update_cursor
-FETCH FROM update_cursor
- 
-WHILE @@FETCH_STATUS=0
-BEGIN
-UPDATE SalesLT.SalesOrderHeader 
-SET SubTotal=(SELECT SUM(LineTotal) from SalesLT.SalesOrderDetail
-              GROUP BY SalesOrderID) 
-WHERE CURRENT OF update_cursor 
-FETCH NEXT FROM update_cursor
-END
-close update_cursor
-Deallocate update_cursor
+CREATE FUNCTION Function_DATES (@id int, @datastart DATE, @dataend DATE)  
+RETURNS TABLE  
+AS  
+RETURN   
+(   
+    SELECT e.emp_no, e.from_date, e.to_date, e.salary
+    FROM Employees.salaries as e   
+    WHERE e.emp_no = @id and e.from_date = @datastart and e.to_date = @dataend
+    GROUP BY e.emp_no ,e.from_date, e.to_date,e.salary
+);  
+GO
 
 5)
 DECLARE update_cursor CURSOR FOR 
