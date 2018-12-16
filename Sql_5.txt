@@ -2,6 +2,108 @@
 Збережені функції та курсори
 
 1)
+CREATE FUNCTION DATES_DIFF(@stardate SMALLDATETIME, @enddate SMALLDATETIME)
+
+RETURNS NVARCHAR(50)
+
+BEGIN
+
+DECLARE @thisYearBirthDay datetime
+DECLARE @TIME_DIFFERENT NVARCHAR(50)
+DECLARE @years int, @months int, @days int
+
+set @thisYearBirthDay = DATEADD(year, DATEDIFF(year, @stardate, @enddate), @stardate)
+set @years = DATEDIFF(year, @stardate, @enddate) - (CASE WHEN @thisYearBirthDay > @enddate THEN 1 ELSE 0 END)
+set @months = MONTH(@enddate - @thisYearBirthDay) - 1
+set @days = DAY(@enddate - @thisYearBirthDay) - 1
+
+IF (@months=1 AND @years%10=1 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дней'
+
+ELSE 
+IF (@months=1 AND @years%10 <=4 AND @years%10>=2 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дней'
+ELSE 
+IF (@months=1 AND (@years%10>=5 OR @years%10=0) AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дней'  
+ELSE
+IF (@months>1 AND @months <5 AND @years%10=1 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дней'
+ELSE 
+IF (@months>1 AND @months <5 AND @years%10 <=4 AND @years%10>=2 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дней'
+ELSE 
+IF (@months>1 AND @months <5 AND (@years%10>=5 OR @years%10=0) AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дней'  
+ELSE
+IF (@months>4 AND @years%10=1 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дней'
+ELSE 
+IF (@months>4 AND @years%10 <=4 AND @years%10>=2 AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дней'
+ELSE 
+IF (@months>4 AND (@years%10>=5 OR @years%10=0) AND (@days%10=0 OR @days%10>4))
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дней'  
+ELSE
+IF (@months=1 AND @years%10=1 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months=1 AND @years%10 <=4 AND @years%10>=2 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months=1 AND (@years%10>=5 OR @years%10=0) AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' день'  
+ELSE
+IF (@months>1 AND @months <5 AND @years%10=1 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months>1 AND @months <5 AND @years%10 <=4 AND @years%10>=2 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months>1 AND @months <5 AND (@years%10>=5 OR @years%10=0) AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' день'  
+ELSE
+IF (@months>4 AND @years%10=1 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months>4 AND @years%10 <=4 AND @years%10>=2 AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' день'
+ELSE 
+IF (@months>4 AND (@years%10>=5 OR @years%10=0) AND @days%10=1)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' день'  
+  
+ELSE
+IF (@months=1 AND @years%10=1 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months=1 AND @years%10 <=4 AND @years%10>=2 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months=1 AND (@years%10>=5 OR @years%10=0) AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяц,' + cast(@days as varchar(3)) + N' дня'  
+ELSE
+IF (@months>1 AND @months <5 AND @years%10=1 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months>1 AND @months <5 AND @years%10 <=4 AND @years%10>=2 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months>1 AND @months <5 AND (@years%10>=5 OR @years%10=0) AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяца,' + cast(@days as varchar(3)) + N' дня'  
+
+ELSE 
+IF (@months>4 AND @years%10=1 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' год,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months>4 AND @years%10 <=4 AND @years%10>=2 AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' года,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дня'
+ELSE 
+IF (@months>4 AND (@years%10>=5 OR @years%10=0) AND @days%10>1 AND @days%10<5)
+SET @TIME_DIFFERENT = cast(@years as varchar(2))  + N' лет,' + cast(@months as varchar(2)) + N' месяцев,' + cast(@days as varchar(3)) + N' дня'  
+
+RETURN @TIME_DIFFERENT
+
+END
 
 2)
 CREATE FUNCTION Chisla(@CH_BEG int)
